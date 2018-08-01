@@ -1,6 +1,6 @@
 import unittest
 
-from Operation import Sin, Add
+from Function import Sin, Add
 from Value import Value
 from Variable import Variable
 
@@ -23,6 +23,14 @@ class AddSinEvaluateTestCase(unittest.TestCase):
         self.assertAlmostEqual(Add(Sin(Value(3)), Value(4)).evaluate().get_value(), 4.14112)
         self.assertAlmostEqual(Add(Sin(Value(3)), Variable('y')).evaluate(y=4).get_value(), 4.14112)
         self.assertAlmostEqual(Add(Sin(Variable('x')), Variable('y')).evaluate(x=3, y=4).get_value(), 4.14112)
+
+class EqualityTestCase(unittest.TestCase):
+    def runTest(self):
+        self.assertEqual(Value(2), Value(2))
+        self.assertEqual(Variable('x'), Variable('x'))
+        self.assertEqual(Value(2) + Value(3), Value(2) + Value(3))
+        self.assertEqual(Value(3) + Value(2), Value(2) + Value(3))
+
 
 if __name__ == '__main__':
     unittest.main()
