@@ -1,5 +1,5 @@
-from Expression import Expression
-from Value import Value
+from expression.Expression import Expression
+
 
 class Variable(Expression):
     def __init__(self, name):

@@ -1,15 +1,17 @@
-from Expression import Expression
-from abc import ABC, abstractmethod
-from math import sin, cos, acos, asin
+from abc import ABC
 from functools import reduce
-from Value import Value
+from math import sin, cos, acos, asin
+
+from expression.Expression import Expression
+from expression.Value import Value
+from parsing.Utils import possibly_parse_literal
 
 
 class Function(Expression, ABC):
     def __init__(self, func, *expressions):
         super().__init__()
         self._func = func
-        self._expressions = expressions
+        self._expressions = list(map(possibly_parse_literal, expressions))
 
     def get_expressions(self):
         return self._expressions
@@ -19,21 +21,22 @@ class Function(Expression, ABC):
         if all(e.get_value() is not None for e in evaluated):
             return Value(self._func(*map(lambda x: x.get_value(), evaluated)))
         else:
-            return self.new_operation(*evaluated)
+            return type(self)(*evaluated)
 
     def get_func(self):
         return self._func
 
-    @abstractmethod
-    def new_operation(self, *evaluated):
-        pass
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and \
+               set(self.get_expressions()) == set(other.get_expressions())
+
+    def __hash__(self):
+        return hash((type(self), self.get_expressions()))
+
 
 class Sin(Function):
     def __init__(self, expr):
         super().__init__(sin, expr)
-
-    def new_operation(self, *evaluated):
-        return Sin(evaluated[0])
 
     def reduce(self):
         expr = self.get_expressions()[0]
@@ -44,32 +47,15 @@ class Sin(Function):
     def __repr__(self):
         return 'sin({})'.format(self._expressions[0].__repr__())
 
-    def __eq__(self, other):
-        return isinstance(other, Sin) and \
-               self.get_expressions() == other.get_expressions()
-
-    def __hash__(self):
-        return hash(('sin', self.get_expressions()))
-
 class Cos(Function):
     def __init__(self, expr):
         super().__init__(cos, expr)
-
-    def new_operation(self, *evaluated):
-        return Cos(evaluated[0])
 
     def reduce(self):
         expr = self.get_expressions()[0]
         if isinstance(expr, Acos):
             return expr.get_expressions()[0].reduce()
         return Cos(expr.reduce())
-
-    def __eq__(self, other):
-        return isinstance(other, Cos) and \
-               self.get_expressions() == other.get_expressions()
-
-    def __hash__(self):
-        return hash(('cos', self.get_expressions()))
 
     def __repr__(self):
         return 'cos({})'.format(self._expressions[0].__repr__())
@@ -78,21 +64,11 @@ class Asin(Function):
     def __init__(self, expr):
         super().__init__(asin, expr)
 
-    def new_operation(self, *evaluated):
-        return Asin(evaluated[0])
-
     def reduce(self):
         expr = self.get_expressions()[0]
         if isinstance(expr, Sin):
             return expr.get_expressions()[0].reduce()
         return Asin(expr.reduce())
-
-    def __eq__(self, other):
-        return isinstance(other, Asin) and \
-               self.get_expressions() == other.get_expressions()
-
-    def __hash__(self):
-        return hash(('asin', self.get_expressions()))
 
     def __repr__(self):
         return 'asin({})'.format(self._expressions[0].__repr__())
@@ -110,22 +86,12 @@ class Acos(Function):
             return expr.get_expressions()[0].reduce()
         return Acos(expr.reduce())
 
-    def __eq__(self, other):
-        return isinstance(other, Acos) and \
-               self.get_expressions() == other.get_expressions()
-
-    def __hash__(self):
-        return hash(('acos', self.get_expressions()))
-
     def __repr__(self):
         return 'acos({})'.format(self._expressions[0].__repr__())
 
 class Negate(Function):
     def __init__(self, expr):
         super().__init__(lambda x: -x, expr)
-
-    def new_operation(self, *evaluated):
-        return Negate(evaluated[0])
 
     def reduce(self):
         expr = self.get_expressions()[0]
@@ -134,22 +100,12 @@ class Negate(Function):
             return Value(-expr.get_value())
         return -(expr.reduce())
 
-    def __eq__(self, other):
-        return isinstance(other, Negate) and \
-               self.get_expressions() == other.get_expressions()
-
-    def __hash__(self):
-        return hash(('negate', self.get_expressions()))
-
     def __repr__(self):
         return '-{}'.format(self._expressions[0].__repr__())
 
 class Add(Function):
     def __init__(self, *expressions):
         super().__init__(lambda *l: reduce(lambda x, y: x+y, l), *expressions)
-
-    def new_operation(self, *evaluated):
-        return Add(*evaluated)
 
     def reduce(self):
         exprs = list(map(lambda x: x.reduce(), self.get_expressions()))
@@ -169,25 +125,14 @@ class Add(Function):
 
         return Add(value, *others)
 
-        return Add(value, *others)
-
-
-    def __eq__(self, other):
-        return isinstance(other, Add) and \
-               set(self.get_expressions()) == set(other.get_expressions())
-
-    def __hash__(self):
-        return hash(('add', self.get_expressions()))
-
     def __repr__(self):
-        return '+'.join(x.__repr__() for x in self.get_expressions())
+        return '(' + \
+               '+'.join(x.__repr__() for x in self.get_expressions()) + \
+               ')'
 
 class Subtract(Function):
     def __init__(self, expr1, expr2):
         super().__init__(lambda a, b: a-b, expr1, expr2)
-
-    def new_operation(self, *evaluated):
-        return Subtract(evaluated[0], evaluated[1])
 
     def reduce(self):
         exprs = self.get_expressions()
@@ -195,13 +140,7 @@ class Subtract(Function):
             return (-exprs[1]).reduce()
         if exprs[1] == Value(0):
             return exprs[0].reduce()
-
-    def __eq__(self, other):
-        return isinstance(other, Subtract) and \
-               self.get_expressions() == other.get_expressions()
-
-    def __hash__(self):
-        return hash(('subtract', self.get_expressions()))
+        return Subtract(exprs[0].reduce(), exprs[1].reduce())
 
     def __repr__(self):
         return '{}-{}'.format(self._expressions[0].__repr__(), self._expressions[1].__repr__())
@@ -209,9 +148,6 @@ class Subtract(Function):
 class Multiply(Function):
     def __init__(self, *expressions):
         super().__init__(lambda *l: reduce(lambda x, y: x*y, l), *expressions)
-
-    def new_operation(self, *evaluated):
-        return Multiply(*evaluated)
 
     def reduce(self):
         exprs = list(map(lambda x: x.reduce(), self.get_expressions()))
@@ -236,13 +172,6 @@ class Multiply(Function):
             return -Multiply(others)
 
         return Multiply(value, *others)
-
-    def __eq__(self, other):
-        return isinstance(other, Multiply) and \
-               set(self.get_expressions()) == set(other.get_expressions())
-
-    def __hash__(self):
-        return hash(('multiply', self.get_expressions()))
 
     def __repr__(self):
         return '*'.join(x.__repr__() for x in self.get_expressions())

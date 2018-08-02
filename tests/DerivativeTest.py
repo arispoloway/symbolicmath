@@ -1,15 +1,14 @@
 import unittest
 
-from Function import Sin, Cos, Multiply, Add
-from Value import Value
-from Variable import Variable
-from Derivative import Derivative
+from expression.Function import Sin, Cos
+
+from expression.Derivative import Derivative
 
 
 class DeriveSinTestCase(unittest.TestCase):
     def runTest(self):
-        x = Derivative(Sin(Variable('x')), 'x').reduce().reduce().reduce()
-        self.assertEqual(Derivative(Sin(Variable('x')), 'x').reduce().reduce(), Cos(Variable('x')))
+        expr = Derivative(Sin('x') - 1, 'x').reduce().reduce()
+        self.assertEqual(expr, Cos('x'))
 
 if __name__ == '__main__':
     unittest.main()

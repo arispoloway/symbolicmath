@@ -1,8 +1,10 @@
-from Expression import Expression
+from expression.Expression import Expression
 
 class Value(Expression):
     def __init__(self, value):
         super().__init__()
+        if not isinstance(value, (int, float, complex)):
+            raise ValueError('Invalid Value')
         self._value = value
 
     def evaluate(self, **kwargs):

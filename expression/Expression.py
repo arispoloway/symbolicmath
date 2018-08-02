@@ -1,6 +1,5 @@
-from abc import ABC, abstractmethod
-import Function
 import logging
+from abc import ABC, abstractmethod
 
 logging.basicConfig()
 log = logging.getLogger()
@@ -32,16 +31,20 @@ class Expression(ABC):
         pass
 
     def __add__(self, other):
-        return Function.Add(self, other)
+        import expression.Function
+        return expression.Function.Add(self, other)
 
     def __mul__(self, other):
-        return Function.Multiply(self, other)
+        import expression.Function
+        return expression.Function.Multiply(self, other)
 
     def __sub__(self, other):
-        return Function.Subtract(self, other)
+        import expression.Function
+        return expression.Function.Subtract(self, other)
 
     def __neg__(self):
-        return Function.Negate(self)
+        import expression.Function
+        return expression.Function.Negate(self)
 
 
 
