@@ -8,7 +8,7 @@ class Variable(Expression):
 
     def evaluate(self, **kwargs):
         if self._name in kwargs:
-            return Value(kwargs.get(self._name))
+            return kwargs.get(self._name)
         return self
 
     def get_name(self):
