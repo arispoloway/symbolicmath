@@ -1,7 +1,8 @@
 from functools import reduce
+from expression.Utils import reduce_all
 
 from expression.Expression import Expression
-from expression.Function import Sin, Cos, Negate, Add, Subtract, Multiply
+from expression.Function import Sin, Cos, Negate, Add, Subtract, Multiply, Power, Log, Divide, Asin, Acos, Exponent
 from expression.Value import Value
 from parsing.Utils import possibly_parse_literal
 
@@ -36,23 +37,37 @@ class Derivative(Expression):
         if isinstance(expr, Cos):
             expr = expr.get_expressions()[0]
             return (Derivative(expr.reduce(), var) * (-Sin(expr.reduce()))).reduce()
+        # TODO add inverse trig derivatives
         if isinstance(expr, Negate):
             expr = expr.get_expressions()[0]
             return -(Derivative(expr.reduce(), var)).reduce()
-        # TODO fix this with how ever many things to sum, also product
         if isinstance(expr, Add):
-            exprs = expr.get_expressions()
-            return reduce(lambda x, y:
-                          Derivative(x.reduce(), var).reduce() +
-                          Derivative(y.reduce(), var).reduce(), exprs)
+            exprs = reduce_all(expr.get_expressions())
+            return Add(*map(lambda x: Derivative(x, var), exprs)).reduce()
         if isinstance(expr, Subtract):
             exprs = expr.get_expressions()
             return Derivative(exprs[0].reduce(), var).reduce() - \
                    Derivative(exprs[1].reduce(), var).reduce()
+        #Todo fix this for more than 2 terms
         if isinstance(expr, Multiply):
+            exprs = reduce_all(expr.get_expressions())
+            first_two = exprs[1] * Derivative(exprs[0], var) +\
+                        exprs[0] * Derivative(exprs[1], var)
+            return first_two.reduce()
+        if isinstance(expr, Exponent):
+            base, exp = expr.get_expressions()
+            return (expr.reduce() * Log(base.reduce())).reduce()
+        if isinstance(expr, Power):
+            base, exp = expr.get_expressions()
+            return (exp * (base^(exp - 1).reduce()) * (base // var)).reduce()
+        if isinstance(expr, Log):
             exprs = expr.get_expressions()
-            return exprs[1] * Derivative(exprs[0], var) +\
-                   exprs[0] * Derivative(exprs[1], var)
+            return Divide(Value(1), Log(exprs[1].reduce()) * exprs[0].reduce()).reduce()
+        if isinstance(expr, Divide):
+            num, den = expr.get_expressions()
+            return Divide(((num // var) * den) - (num * (den // var)), den ^ 2).reduce()
+
+
 
     def __eq__(self, other):
         return isinstance(other, Derivative) and \

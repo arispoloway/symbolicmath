@@ -1,9 +1,13 @@
 from abc import ABC
 from functools import reduce
-from math import sin, cos, acos, asin
+from itertools import chain
+from collections import Counter
+from math import sin, cos, acos, asin, pow, log, e
 
 from expression.Expression import Expression
 from expression.Value import Value
+from expression.Variable import Variable
+from expression.Utils import reduce_all
 from parsing.Utils import possibly_parse_literal
 
 
@@ -11,15 +15,15 @@ class Function(Expression, ABC):
     def __init__(self, func, *expressions):
         super().__init__()
         self._func = func
-        self._expressions = list(map(possibly_parse_literal, expressions))
+        self._expressions = tuple(map(possibly_parse_literal, expressions))
 
     def get_expressions(self):
         return self._expressions
 
     def evaluate(self, **kwargs):
         evaluated = list(map(lambda x: x.evaluate(**kwargs), self._expressions))
-        if all(e.get_value() is not None for e in evaluated):
-            return Value(self._func(*map(lambda x: x.get_value(), evaluated)))
+        if all(e.get_numeric_value() is not None for e in evaluated):
+            return Value(self._func(*map(lambda x: x.get_numeric_value(), evaluated)))
         else:
             return type(self)(*evaluated)
 
@@ -97,7 +101,7 @@ class Negate(Function):
         expr = self.get_expressions()[0]
         # Maybe not do this?
         if isinstance(expr, Value):
-            return Value(-expr.get_value())
+            return Value(-expr.get_numeric_value())
         return -(expr.reduce())
 
     def __repr__(self):
@@ -106,14 +110,37 @@ class Negate(Function):
 class Add(Function):
     def __init__(self, *expressions):
         super().__init__(lambda *l: reduce(lambda x, y: x+y, l), *expressions)
+        if len(expressions) < 2:
+            raise ValueError('Not enough expressions')
 
     def reduce(self):
-        exprs = list(map(lambda x: x.reduce(), self.get_expressions()))
+        exprs = reduce_all(self.get_expressions())
 
-        values = list(filter(lambda x: isinstance(x, Value), exprs))
-        value = Value(self.get_func()(0, *(x.get_value() for x in values)))
+        add_terms = []
+        others = []
+        for expr in exprs:
+            if isinstance(expr, Add):
+                add_terms += expr.get_expressions()
+            else:
+                others.append(expr)
 
-        others = list(filter(lambda x: not isinstance(x, Value), exprs))
+        if add_terms:
+            multiply_terms = Add(*add_terms).reduce().get_expressions()
+
+
+        total = [*others, *add_terms]
+        values = [x.get_numeric_value() for x in total if isinstance(x, Value)] + [0]
+        value = Value(self.get_func()(*values))
+        others = tuple(filter(lambda x: not isinstance(x, Value), total))
+
+        counts = Counter(others)
+        others = []
+        for term in counts:
+            freq = counts[term]
+            if freq == 1:
+                others.append(term)
+            else:
+                others.append(Value(freq) * term)
 
         if len(others) == 0:
             return value
@@ -135,27 +162,70 @@ class Subtract(Function):
         super().__init__(lambda a, b: a-b, expr1, expr2)
 
     def reduce(self):
-        exprs = self.get_expressions()
+        exprs = reduce_all(self.get_expressions())
         if exprs[0] == Value(0):
-            return (-exprs[1]).reduce()
+            return -exprs[1]
         if exprs[1] == Value(0):
-            return exprs[0].reduce()
-        return Subtract(exprs[0].reduce(), exprs[1].reduce())
+            return exprs[0]
+        if isinstance(exprs[0], Value) and isinstance(exprs[1], Value):
+            return Value(exprs[0].get_numeric_value() - exprs[1].get_numeric_value())
+        return Subtract(exprs[0], exprs[1])
 
     def __repr__(self):
-        return '{}-{}'.format(self._expressions[0].__repr__(), self._expressions[1].__repr__())
+        return '({}-{})'.format(self._expressions[0].__repr__(), self._expressions[1].__repr__())
+
+class Divide(Function):
+    def __init__(self, numer, denom):
+        super().__init__(lambda a, b: a/b, numer, denom)
+
+    def reduce(self):
+        exprs = reduce_all(self.get_expressions())
+        if exprs[1] == Value(1):
+            return exprs[0]
+        if exprs[1] == Value(-1):
+            return (-exprs[0])
+        return Divide(exprs[0], exprs[1])
+
+    def __repr__(self):
+        return '(({})/({}))'.format(self._expressions[0].__repr__(), self._expressions[1].__repr__())
 
 class Multiply(Function):
     def __init__(self, *expressions):
         super().__init__(lambda *l: reduce(lambda x, y: x*y, l), *expressions)
+        if len(expressions) < 2:
+            raise ValueError('Not enough expressions')
 
     def reduce(self):
-        exprs = list(map(lambda x: x.reduce(), self.get_expressions()))
+        exprs = reduce_all(self.get_expressions())
 
-        values = list(filter(lambda x: isinstance(x, Value), exprs))
-        value = Value(self.get_func()(1, *(x.get_value() for x in values)))
+        multiply_terms = []
+        others = []
+        for expr in exprs:
+            if isinstance(expr, Multiply):
+                multiply_terms += expr.get_expressions()
+            else:
+                others.append(expr)
 
-        others = list(filter(lambda x: not isinstance(x, Value), exprs))
+        if multiply_terms:
+            multiply_terms = Multiply(*multiply_terms).reduce().get_expressions()
+
+
+        total = [*others, *multiply_terms]
+        values = [x.get_numeric_value() for x in total if isinstance(x, Value)] + [1]
+        value = Value(self.get_func()(*values))
+        others = tuple(filter(lambda x: not isinstance(x, Value), total))
+
+        counts = Counter(others)
+        others = []
+        for term in counts:
+            freq = counts[term]
+            if freq == 1:
+                others.append(term)
+            else:
+                others.append(term ^ freq)
+
+        if value == Value(0):
+            return value
 
         if len(others) == 0:
             return value
@@ -164,14 +234,64 @@ class Multiply(Function):
             if len(others) == 1:
                 return others[0]
             return Multiply(*others)
-        if value == Value(0):
-            return Value(0)
         if value == Value(-1):
             if len(others) == 1:
                 return -others[0]
             return -Multiply(others)
 
-        return Multiply(value, *others)
+
+        else:
+            return Multiply(value, *others)
+
+
 
     def __repr__(self):
-        return '*'.join(x.__repr__() for x in self.get_expressions())
+        return '('+ '*'.join(x.__repr__() for x in self.get_expressions()) + ')'
+
+
+class Power(Function):
+    def __init__(self, base, exponent):
+        super().__init__(lambda x, y: pow(x, y), base, exponent)
+        _, exp = self.get_expressions()
+        if not isinstance(exp, Value):
+            raise ValueError('Invalid exponent')
+
+    def reduce(self):
+        base, exp = reduce_all(self.get_expressions())
+        if exp == Value(1):
+            return base
+        if exp == Value(0):
+            return Value(1)
+        if isinstance(base, Value):
+            return Value(self.get_func()(base.get_numeric_value(), exp.get_numeric_value()))
+        return self
+
+    def __repr__(self):
+        exprs = self.get_expressions()
+        return '({})^({})'.format(exprs[0], exprs[1])
+
+class Exponent(Function):
+    def __init__(self, base, exponent):
+        super().__init__(lambda x, y: pow(x, y), base, exponent)
+        b, _ = self.get_expressions()
+        if not isinstance(b, Value):
+            raise ValueError('Invalid base')
+
+    def reduce(self):
+        #TODO add reducers with log and stuff
+        return self
+
+    def __repr__(self):
+        exprs = self.get_expressions()
+        return '({})^({})'.format(exprs[0], exprs[1])
+
+class Log(Function):
+    def __init__(self, n, base=e):
+        super().__init__(lambda x, y: log(n, base), n, base)
+
+    def reduce(self):
+        return self
+
+    def __repr__(self):
+        exprs = self.get_expressions()
+        return '({})^({})'.format(exprs[0].__repr__(), exprs[1].__repr__())

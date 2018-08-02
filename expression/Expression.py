@@ -12,7 +12,7 @@ class Expression(ABC):
     def evaluate(self, **kwargs):
         pass
 
-    def get_value(self):
+    def get_numeric_value(self):
         return None
 
     def reduce(self):
@@ -45,6 +45,25 @@ class Expression(ABC):
     def __neg__(self):
         import expression.Function
         return expression.Function.Negate(self)
+
+    def __truediv__(self, other):
+        import expression.Function
+        return expression.Function.Divide(self, other)
+
+    def __floordiv__(self, other):
+        import expression.Derivative
+        return expression.Derivative.Derivative(self, other)
+
+    def __xor__(self, other):
+        import expression.Function
+        try:
+            return expression.Function.Power(self, other)
+        except:
+            try:
+                return expression.Function.Exponent(self, other)
+            except:
+                raise ValueError()
+
 
 
 

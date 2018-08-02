@@ -8,7 +8,8 @@ class Variable(Expression):
 
     def evaluate(self, **kwargs):
         if self._name in kwargs:
-            return kwargs.get(self._name)
+            from parsing.Utils import possibly_parse_literal
+            return possibly_parse_literal(kwargs.get(self._name))
         return self
 
     def get_name(self):
