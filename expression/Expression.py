@@ -15,7 +15,13 @@ class Expression(ABC):
     def get_numeric_value(self):
         return None
 
-    def reduce(self):
+    def get_simplifiers(self):
+        return []
+
+    def simplify(self):
+        return self
+
+    def simplify_sub_expressions(self):
         return self
 
     @abstractmethod
