@@ -1,4 +1,7 @@
-from expression.Function import *
+from abc import ABC, abstractmethod
+
+from expression.Function import Function
+from expression.Value import Value
 
 
 class Simplifier(ABC):

@@ -7,14 +7,15 @@ from abc import ABC
 
 class DerivativeSimplifier(Simplifier, ABC):
 
-    def valid_if_type(self, e, t):
+    @staticmethod
+    def valid_if_type(e, t):
         return isinstance(e, Derivative) and isinstance(e.get_expression(), t)
 
 
 class DerivativeConstantSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Value)
+        return DerivativeSimplifier.valid_if_type(expression, Value)
 
     def _simplify(self, expression):
         return Value(0)
@@ -30,7 +31,7 @@ class DerivativeVariableSimplifier(DerivativeSimplifier):
 class DerivativeSinSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Sin)
+        return DerivativeSimplifier.valid_if_type(expression, Sin)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -40,7 +41,7 @@ class DerivativeSinSimplifier(DerivativeSimplifier):
 class DerivativeCosSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Cos)
+        return DerivativeSimplifier.valid_if_type(expression, Cos)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -50,7 +51,7 @@ class DerivativeCosSimplifier(DerivativeSimplifier):
 class DerivativeNegateSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Negate)
+        return DerivativeSimplifier.valid_if_type(expression, Negate)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -60,7 +61,7 @@ class DerivativeNegateSimplifier(DerivativeSimplifier):
 class DerivativeAddSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Add)
+        return DerivativeSimplifier.valid_if_type(expression, Add)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -71,7 +72,7 @@ class DerivativeAddSimplifier(DerivativeSimplifier):
 class DerivativeSubtractSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Subtract)
+        return DerivativeSimplifier.valid_if_type(expression, Subtract)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -84,7 +85,7 @@ class DerivativeSubtractSimplifier(DerivativeSimplifier):
 class DerivativeMultiplySimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Multiply)
+        return DerivativeSimplifier.valid_if_type(expression, Multiply)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -97,7 +98,7 @@ class DerivativeMultiplySimplifier(DerivativeSimplifier):
 class DerivativeExponentSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Exponent)
+        return DerivativeSimplifier.valid_if_type(expression, Exponent)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -108,7 +109,7 @@ class DerivativeExponentSimplifier(DerivativeSimplifier):
 class DerivativeLogSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Log)
+        return DerivativeSimplifier.valid_if_type(expression, Log)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -119,7 +120,7 @@ class DerivativeLogSimplifier(DerivativeSimplifier):
 class DerivativePowerSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Power)
+        return DerivativeSimplifier.valid_if_type(expression, Power)
 
     def _simplify(self, expression):
         expr = expression.get_expression()
@@ -130,7 +131,7 @@ class DerivativePowerSimplifier(DerivativeSimplifier):
 class DerivativeDivideSimplifier(DerivativeSimplifier):
 
     def can_simplify(self, expression):
-        return self.valid_if_type(expression, Divide)
+        return DerivativeSimplifier.valid_if_type(expression, Divide)
 
     def _simplify(self, expression):
         expr = expression.get_expression()

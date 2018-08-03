@@ -1,10 +1,4 @@
-from functools import reduce
-
 from expression.SimplifiableExpression import SimplifiableExpression
-from expression.Utils import reduce_all
-
-from expression.Expression import Expression
-from expression.Function import Sin, Cos, Negate, Add, Subtract, Multiply, Power, Log, Divide, Asin, Acos, Exponent
 from expression.Value import Value
 from parsing.Utils import possibly_parse_literal
 

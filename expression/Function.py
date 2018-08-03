@@ -1,13 +1,9 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from functools import reduce
-from itertools import chain
-from collections import Counter
 from math import sin, cos, acos, asin, pow, log, e
 
-from expression.Expression import Expression
 from expression.SimplifiableExpression import SimplifiableExpression
 from expression.Value import Value
-from expression.Variable import Variable
 from expression.Utils import reduce_all
 from parsing.Utils import possibly_parse_literal
 

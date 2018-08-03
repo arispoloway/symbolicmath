@@ -10,8 +10,8 @@ from expression.Derivative import Derivative
 
 class DeriveSinTestCase(unittest.TestCase):
     def runTest(self):
-        #expr = Derivative(Sin('x') - 1, 'x').simplify()
-        #self.assertEqual(expr, Cos('x'))
+        expr = Derivative(Sin('x') - 1, 'x').simplify()
+        self.assertEqual(expr, Cos('x'))
         expr = Derivative(Sin(Value(2) * 'x') - 1, 'x').simplify()
         self.assertEqual(expr, Value(2) * Cos(Value(2) * 'x'))
 
