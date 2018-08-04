@@ -5,7 +5,6 @@ from expression.Value import Value
 
 
 class Simplifier(ABC):
-
     @abstractmethod
     def can_simplify(self, expression):
         pass
@@ -19,12 +18,12 @@ class Simplifier(ABC):
             return self._simplify(expression)
         return expression
 
-class ValueOnlySimplifier(Simplifier):
 
+class ValueOnlySimplifier(Simplifier):
     def can_simplify(self, expression):
         return isinstance(expression, Function) and all(isinstance(e, Value) for e in expression.get_expressions())
 
     def _simplify(self, expression):
         return Value(expression.get_func()(*(e.get_numeric_value() for e in expression.get_expressions())))
 
-#TODO write Derivative, Exponent and Log simplifiers
+# TODO write Derivative, Exponent and Log simplifiers

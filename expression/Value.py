@@ -1,5 +1,6 @@
 from expression.Expression import Expression
 
+
 class Value(Expression):
     def __init__(self, value):
         super().__init__()
@@ -22,4 +23,3 @@ class Value(Expression):
 
     def __repr__(self):
         return '{}'.format(self._value)
-

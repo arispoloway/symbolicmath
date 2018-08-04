@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from functools import reduce
 from math import sin, cos, acos, asin, pow, log, e
 
@@ -9,6 +9,10 @@ from parsing.Utils import possibly_parse_literal
 
 
 class Function(SimplifiableExpression, ABC):
+    @abstractmethod
+    def __repr__(self):
+        pass
+
     def __init__(self, func, *expressions, commute=False):
         super().__init__()
         self._func = func
@@ -20,7 +24,7 @@ class Function(SimplifiableExpression, ABC):
 
     def evaluate(self, **kwargs):
         evaluated = list(map(lambda x: x.evaluate(**kwargs), self._expressions))
-        if all(e.get_numeric_value() is not None for e in evaluated):
+        if all(expr.get_numeric_value() is not None for expr in evaluated):
             return Value(self._func(*map(lambda x: x.get_numeric_value(), evaluated)))
         else:
             return type(self)(*evaluated)
@@ -54,6 +58,7 @@ class Sin(Function):
     def __repr__(self):
         return 'sin({})'.format(self._expressions[0].__repr__())
 
+
 class Cos(Function):
     def __init__(self, expr):
         super().__init__(cos, expr)
@@ -65,6 +70,7 @@ class Cos(Function):
 
     def __repr__(self):
         return 'cos({})'.format(self._expressions[0].__repr__())
+
 
 class Asin(Function):
     def __init__(self, expr):
@@ -78,6 +84,7 @@ class Asin(Function):
     def __repr__(self):
         return 'asin({})'.format(self._expressions[0].__repr__())
 
+
 class Acos(Function):
     def __init__(self, expr):
         super().__init__(acos, expr)
@@ -90,6 +97,7 @@ class Acos(Function):
     def __repr__(self):
         return 'acos({})'.format(self._expressions[0].__repr__())
 
+
 class Negate(Function):
     def __init__(self, expr):
         super().__init__(lambda x: -x, expr)
@@ -101,9 +109,10 @@ class Negate(Function):
     def __repr__(self):
         return '-{}'.format(self._expressions[0].__repr__())
 
+
 class Add(Function):
-    def __init__(self, *expressions, commute=True):
-        super().__init__(lambda *l: reduce(lambda x, y: x+y, l), *expressions)
+    def __init__(self, *expressions):
+        super().__init__(lambda *l: reduce(lambda x, y: x + y, l), *expressions)
         if len(expressions) < 2:
             raise ValueError('Not enough expressions')
 
@@ -119,7 +128,7 @@ class Add(Function):
         return [ValueOnlySimplifier(),
                 AddNestedAddSimplifier(),
                 AddCombineValuesSimplifier(),
-                AddCombineTermsSimplifier(),]
+                AddCombineTermsSimplifier(), ]
 
     def __eq__(self, other):
         return isinstance(other, Add) and set(self.get_expressions()) == set(other.get_expressions())
@@ -132,9 +141,10 @@ class Add(Function):
                '+'.join(x.__repr__() for x in self.get_expressions()) + \
                ')'
 
+
 class Subtract(Function):
     def __init__(self, expr1, expr2):
-        super().__init__(lambda a, b: a-b, expr1, expr2)
+        super().__init__(lambda a, b: a - b, expr1, expr2)
 
     def get_simplifiers(self):
         from expression.simplifier.Simplifier import ValueOnlySimplifier
@@ -144,9 +154,10 @@ class Subtract(Function):
     def __repr__(self):
         return '({}-{})'.format(self._expressions[0].__repr__(), self._expressions[1].__repr__())
 
+
 class Divide(Function):
     def __init__(self, numer, denom):
-        super().__init__(lambda a, b: a/b, numer, denom)
+        super().__init__(lambda a, b: a / b, numer, denom)
 
     def get_simplifiers(self):
         from expression.simplifier.Simplifier import ValueOnlySimplifier
@@ -156,9 +167,10 @@ class Divide(Function):
     def __repr__(self):
         return '(({})/({}))'.format(self._expressions[0].__repr__(), self._expressions[1].__repr__())
 
+
 class Multiply(Function):
     def __init__(self, *expressions):
-        super().__init__(lambda *l: reduce(lambda x, y: x*y, l), *expressions, commute=True)
+        super().__init__(lambda *l: reduce(lambda x, y: x * y, l), *expressions, commute=True)
         if len(expressions) < 2:
             raise ValueError('Not enough expressions')
 
@@ -174,11 +186,10 @@ class Multiply(Function):
         return [ValueOnlySimplifier(),
                 MultiplyNestedMultiplySimplifier(),
                 MultiplyCombineValuesSimplifier(),
-                MultiplyCombineTermsSimplifier(),]
-
+                MultiplyCombineTermsSimplifier(), ]
 
     def __repr__(self):
-        return '('+ '*'.join(x.__repr__() for x in self.get_expressions()) + ')'
+        return '(' + '*'.join(x.__repr__() for x in self.get_expressions()) + ')'
 
 
 class Power(Function):
@@ -198,6 +209,7 @@ class Power(Function):
         exprs = self.get_expressions()
         return '({})^({})'.format(exprs[0], exprs[1])
 
+
 class Exponent(Function):
     def __init__(self, base, exponent):
         super().__init__(lambda x, y: pow(x, y), base, exponent)
@@ -212,6 +224,7 @@ class Exponent(Function):
     def __repr__(self):
         exprs = self.get_expressions()
         return '({})^({})'.format(exprs[0], exprs[1])
+
 
 class Log(Function):
     def __init__(self, n, base=e):

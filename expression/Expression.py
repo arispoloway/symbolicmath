@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 logging.basicConfig()
 log = logging.getLogger()
 
+
 class Expression(ABC):
     def __init__(self):
         pass
@@ -64,10 +65,10 @@ class Expression(ABC):
         import expression.Function
         try:
             return expression.Function.Power(self, other)
-        except:
+        except ValueError:
             try:
                 return expression.Function.Exponent(self, other)
-            except:
+            except ValueError:
                 raise ValueError()
 
 

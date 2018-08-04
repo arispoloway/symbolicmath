@@ -1,6 +1,6 @@
-
 def reduce_all(l):
     return tuple(map(lambda x: x.simplify(), l))
+
 
 def reduce_x(expr, n):
     new_expr = expr
@@ -8,6 +8,7 @@ def reduce_x(expr, n):
         new_expr = new_expr.simplify()
         n -= 1
     return new_expr
+
 
 def filter_split(func, l):
     good = []
@@ -18,4 +19,3 @@ def filter_split(func, l):
         else:
             bad.append(x)
     return good, bad
-

@@ -15,6 +15,7 @@ class DeriveSinTestCase(unittest.TestCase):
         expr = Derivative(Sin(Value(2) * 'x') - 1, 'x').simplify()
         self.assertEqual(expr, Value(2) * Cos(Value(2) * 'x'))
 
+
 class DeriveCosTestCase(unittest.TestCase):
     def runTest(self):
         expr = Derivative(Cos('x') - 1, 'x').simplify()
@@ -22,39 +23,41 @@ class DeriveCosTestCase(unittest.TestCase):
         expr = Derivative(Cos(Value(2) * 'x') - 1, 'x').simplify()
         self.assertEqual(expr, Value(2) * (-Sin(Value(2) * 'x')))
 
+
 class DeriveNegateTestCase(unittest.TestCase):
     def runTest(self):
         expr = Derivative(-Variable('x') - 1, 'x').simplify()
         self.assertEqual(expr, Value(-1))
+
 
 class DeriveAddTestCase(unittest.TestCase):
     def runTest(self):
         expr = Derivative(Sin('x') + Variable('x') + 1 + 8, 'x').simplify()
         self.assertEqual(expr, Cos('x') + 1)
 
+
 class DeriveSubtractTestCase(unittest.TestCase):
     def runTest(self):
         expr = Derivative(Sin('x') - Variable('x'), 'x').simplify()
         self.assertEqual(expr, Cos('x') - 1)
 
+
 class DeriveDivideTestCase(unittest.TestCase):
     def runTest(self):
         expr = reduce_x(Derivative(Sin('x') / Variable('x'), 'x'), 2)
-        self.assertEqual(expr, (Cos('x')*'x' - Sin('x'))/(Variable('x')^2))
+        self.assertEqual(expr, (Cos('x') * 'x' - Sin('x')) / (Variable('x') ^ 2))
+
 
 class DeriveMultiplyTestCase(unittest.TestCase):
     def runTest(self):
         expr = reduce_x(Derivative(Sin('x') * Variable('x'), 'x'), 2)
         self.assertEqual(expr, Sin('x') + Variable('x') * Cos('x'))
-        #TODO write tests for multiplication with more terms
+        # TODO write tests for multiplication with more terms
+
 
 class DerivePowerTestCase(unittest.TestCase):
     def runTest(self):
         expr = reduce_x(Derivative(Variable('x') ^ 2, 'x'), 2)
         self.assertEqual(expr, Value(2) * 'x')
-        expr = reduce_x(Derivative((Variable('x')* 2) ^ 2, 'x'), 2)
+        expr = reduce_x(Derivative((Variable('x') * 2) ^ 2, 'x'), 2)
         self.assertEqual(expr, Value(8) * 'x')
-
-if __name__ == '__main__':
-    unittest.main()
-

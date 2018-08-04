@@ -9,9 +9,9 @@ from expression.simplifier.Simplifier import Simplifier
 
 
 class AddNestedAddSimplifier(Simplifier):
-
     def can_simplify(self, expression):
-        return isinstance(expression, Add) and len([expr for expr in expression.get_expressions() if isinstance(expr, Add)]) != 0
+        return isinstance(expression, Add) and \
+               len([expr for expr in expression.get_expressions() if isinstance(expr, Add)]) != 0
 
     def _simplify(self, expression):
         adds, other = filter_split(lambda x: isinstance(x, Add), expression.get_expressions())
@@ -21,13 +21,13 @@ class AddNestedAddSimplifier(Simplifier):
 
 
 class AddCombineValuesSimplifier(Simplifier):
-
     def can_simplify(self, expression):
-        return isinstance(expression, Add) and len([expr for expr in expression.get_expressions() if isinstance(expr, Value)]) > 0
+        return isinstance(expression, Add) and \
+               len([expr for expr in expression.get_expressions() if isinstance(expr, Value)]) > 0
 
     def _simplify(self, expression):
         values, other = filter_split(lambda x: isinstance(x, Value), expression.get_expressions())
-        value = reduce(lambda x,y: x+y, map(lambda x: x.get_numeric_value(), values))
+        value = reduce(lambda x, y: x + y, map(lambda x: x.get_numeric_value(), values))
 
         if value == 0:
             if len(other) == 1:
@@ -37,9 +37,8 @@ class AddCombineValuesSimplifier(Simplifier):
 
 
 class AddCombineTermsSimplifier(Simplifier):
-
     def can_simplify(self, expression):
-        #TODO maybe rethink this can_simplify, seems to be kinda annoying to do here, somewhat duplicated
+        # TODO maybe rethink this can_simplify, seems to be kinda annoying to do here, somewhat duplicated
         # might just be better to do this check in simplify, and do nothing if not applicable
         return isinstance(expression, Add)
 

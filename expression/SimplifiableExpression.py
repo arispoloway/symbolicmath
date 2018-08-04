@@ -3,6 +3,21 @@ from abc import ABC, abstractmethod
 
 
 class SimplifiableExpression(Expression, ABC):
+    @abstractmethod
+    def __eq__(self, other):
+        pass
+
+    @abstractmethod
+    def __hash__(self):
+        pass
+
+    @abstractmethod
+    def evaluate(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def __repr__(self):
+        pass
 
     def simplify(self):
         current_expression = self
@@ -20,6 +35,5 @@ class SimplifiableExpression(Expression, ABC):
                 if current_expression not in past_expressions:
                     past_expressions.add(current_expression)
                     change_this_iteration = True
-
 
         return current_expression

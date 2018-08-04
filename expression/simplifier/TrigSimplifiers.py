@@ -3,7 +3,6 @@ from expression.simplifier.Simplifier import Simplifier
 
 
 class SinAsinSimplifier(Simplifier):
-
     def can_simplify(self, expression):
         return isinstance(expression, Sin) and isinstance(expression.get_expressions()[0], Asin)
 
@@ -12,7 +11,6 @@ class SinAsinSimplifier(Simplifier):
 
 
 class AsinSinSimplifier(Simplifier):
-
     def can_simplify(self, expression):
         return isinstance(expression, Asin) and isinstance(expression.get_expressions()[0], Sin)
 
@@ -21,7 +19,6 @@ class AsinSinSimplifier(Simplifier):
 
 
 class CosAcosSimplifier(Simplifier):
-
     def can_simplify(self, expression):
         return isinstance(expression, Cos) and isinstance(expression.get_expressions()[0], Acos)
 
@@ -30,7 +27,6 @@ class CosAcosSimplifier(Simplifier):
 
 
 class AcosCosSimplifier(Simplifier):
-
     def can_simplify(self, expression):
         return isinstance(expression, Acos) and isinstance(expression.get_expressions()[0], Cos)
 

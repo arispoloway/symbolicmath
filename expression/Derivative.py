@@ -20,7 +20,7 @@ class Derivative(SimplifiableExpression):
     def evaluate(self, **kwargs):
         return Derivative(self._expr.evaluate(**kwargs), self._var)
 
-    #TODO rework this into a Function as well?
+    # TODO rework this into a Function as well?
     def simplify_sub_expressions(self):
         return Derivative(self._expr.simplify(), self._var.simplify())
 
@@ -54,8 +54,6 @@ class Derivative(SimplifiableExpression):
             DerivativePowerSimplifier(),
             DerivativeDivideSimplifier(),
         ]
-
-
 
     def __eq__(self, other):
         return isinstance(other, Derivative) and \
