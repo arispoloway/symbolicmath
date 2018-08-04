@@ -12,19 +12,11 @@ from expression.Variable import Variable
 
 from expression.Value import Value
 
+from tests.utils import SimplifierTest
+
 x = Variable('x')
 y = Variable('y')
 z = Variable('z')
-
-
-class SimplifierTest(unittest.TestCase):
-    simplifier = None
-
-    def simplify(self, expr):
-        return self.simplifier.simplify(expr)
-
-    def assertSimplify(self, expr1, expr2):
-        self.assertEqual(self.simplify(expr1), expr2)
 
 
 class DivideByOneTest(SimplifierTest):

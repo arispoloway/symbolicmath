@@ -4,7 +4,7 @@ from math import sin, cos, acos, asin, pow, log, e
 
 from expression.SimplifiableExpression import SimplifiableExpression
 from expression.Value import Value
-from expression.Utils import reduce_all
+from expression.Utils import simplify_all
 from parsing.Utils import possibly_parse_literal
 
 
@@ -30,7 +30,7 @@ class Function(SimplifiableExpression, ABC):
             return type(self)(*evaluated)
 
     def simplify_sub_expressions(self):
-        return type(self)(*reduce_all(self._expressions))
+        return type(self)(*simplify_all(self._expressions))
 
     def get_func(self):
         return self._func
@@ -39,6 +39,9 @@ class Function(SimplifiableExpression, ABC):
         if not isinstance(other, type(self)):
             return False
         if self._commute:
+            print(set(self.get_expressions()))
+            print(set(other.get_expressions()))
+
             return set(self.get_expressions()) == set(other.get_expressions())
         return self.get_expressions() == other.get_expressions()
 
@@ -236,4 +239,4 @@ class Log(Function):
 
     def __repr__(self):
         exprs = self.get_expressions()
-        return '({})^({})'.format(exprs[0].__repr__(), exprs[1].__repr__())
+        return 'Log(n={}, b={})'.format(exprs[0].__repr__(), exprs[1].__repr__())

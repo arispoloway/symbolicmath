@@ -39,11 +39,14 @@ class Expression(ABC):
 
     def __add__(self, other):
         import expression.Function
-        return expression.Function.Add(self, other)
+        # TODO maybe think more about this? Combining here seems logical for ease of use, especially while testing
+        from expression.simplifier.AddSimplifiers import AddNestedAddSimplifier
+        return AddNestedAddSimplifier().simplify(expression.Function.Add(self, other))
 
     def __mul__(self, other):
         import expression.Function
-        return expression.Function.Multiply(self, other)
+        from expression.simplifier.MultiplySimplifiers import MultiplyNestedMultiplySimplifier
+        return MultiplyNestedMultiplySimplifier().simplify(expression.Function.Multiply(self, other))
 
     def __sub__(self, other):
         import expression.Function

@@ -3,62 +3,76 @@ import unittest
 from expression.Function import *
 from expression.Variable import Variable
 from expression.Value import Value
-from expression.Utils import reduce_x
+from expression.simplifier.DerivativeSimplifiers import *
+
 
 from expression.Derivative import Derivative
+from tests.utils import SimplifierTest
+
+
+x, y, z = Variable('x'), Variable('y'), Variable('z')
 
 
 # TODO rework all simplifier tests like those in test_simplifier, total simplifications to test_simplify
-class DeriveSinTestCase(unittest.TestCase):
+class DeriveSinTestCase(SimplifierTest):
+    simplifier = DerivativeSinSimplifier()
+
     def runTest(self):
-        expr = Derivative(Sin('x') - 1, 'x').simplify()
-        self.assertEqual(expr, Cos('x'))
-        expr = Derivative(Sin(Value(2) * 'x') - 1, 'x').simplify()
-        self.assertEqual(expr, Value(2) * Cos(Value(2) * 'x'))
+        self.assertSimplify(Sin(x * 2) // x, ((x * 2) // x) * Cos(x * 2))
 
 
-class DeriveCosTestCase(unittest.TestCase):
+class DeriveCosTestCase(SimplifierTest):
+    simplifier = DerivativeCosSimplifier()
+
     def runTest(self):
-        expr = Derivative(Cos('x') - 1, 'x').simplify()
-        self.assertEqual(expr, -Sin('x'))
-        expr = Derivative(Cos(Value(2) * 'x') - 1, 'x').simplify()
-        self.assertEqual(expr, Value(2) * (-Sin(Value(2) * 'x')))
+        self.assertSimplify(Cos(x * 2) // x, ((x * 2) // x) * - Sin(x * 2))
 
 
-class DeriveNegateTestCase(unittest.TestCase):
+class DeriveNegateTestCase(SimplifierTest):
+    simplifier = DerivativeNegateSimplifier()
+
     def runTest(self):
-        expr = Derivative(-Variable('x') - 1, 'x').simplify()
-        self.assertEqual(expr, Value(-1))
+        self.assertSimplify((-(x + 3)) // x, -((x + 3) // x))
 
 
-class DeriveAddTestCase(unittest.TestCase):
+class DeriveAddTestCase(SimplifierTest):
+    simplifier = DerivativeAddSimplifier()
+
     def runTest(self):
-        expr = Derivative(Sin('x') + Variable('x') + 1 + 8, 'x').simplify()
-        self.assertEqual(expr, Cos('x') + 1)
+        self.assertSimplify((Sin(x) + x) // x, Sin(x) // x + x // x)
 
 
-class DeriveSubtractTestCase(unittest.TestCase):
+class DeriveSubtractTestCase(SimplifierTest):
+    simplifier = DerivativeSubtractSimplifier()
+
     def runTest(self):
-        expr = Derivative(Sin('x') - Variable('x'), 'x').simplify()
-        self.assertEqual(expr, Cos('x') - 1)
+        self.assertSimplify((Sin(x) - x) // x, Sin(x) // x - x // x)
 
 
-class DeriveDivideTestCase(unittest.TestCase):
+class DeriveDivideTestCase(SimplifierTest):
+    simplifier = DerivativeDivideSimplifier()
+
     def runTest(self):
-        expr = reduce_x(Derivative(Sin('x') / Variable('x'), 'x'), 2)
-        self.assertEqual(expr, (Cos('x') * 'x' - Sin('x')) / (Variable('x') ^ 2))
+        self.assertSimplify((Sin(x) / x) // x, (x * (Sin(x) // x) - Sin(x) * (x // x)) / (x ^ 2))
 
 
-class DeriveMultiplyTestCase(unittest.TestCase):
+class DeriveMultiplyTestCase(SimplifierTest):
+    simplifier = DerivativeMultiplySimplifier()
+
     def runTest(self):
-        expr = reduce_x(Derivative(Sin('x') * Variable('x'), 'x'), 2)
-        self.assertEqual(expr, Sin('x') + Variable('x') * Cos('x'))
+        self.assertSimplify((Sin(x) * x) // x, Sin(x) * (x // x) + x * (Sin(x) // x))
         # TODO write tests for multiplication with more terms
 
 
-class DerivePowerTestCase(unittest.TestCase):
+class DerivePowerTestCase(SimplifierTest):
+    simplifier = DerivativePowerSimplifier()
+
     def runTest(self):
-        expr = reduce_x(Derivative(Variable('x') ^ 2, 'x'), 2)
-        self.assertEqual(expr, Value(2) * 'x')
-        expr = reduce_x(Derivative((Variable('x') * 2) ^ 2, 'x'), 2)
-        self.assertEqual(expr, Value(8) * 'x')
+        self.assertSimplify((x ^ 2) // x, Value(2) * (x ^ 1) * (x // x))
+
+
+class DeriveExponentTestCase(SimplifierTest):
+    simplifier = DerivativeExponentSimplifier()
+
+    def runTest(self):
+        self.assertSimplify((Value(2) ^ x) // x, Multiply(Value(2) ^ x, x // x, Log(2)))
