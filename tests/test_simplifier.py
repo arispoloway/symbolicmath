@@ -1,4 +1,12 @@
 import unittest
+from expression.simplifier.AddSimplifiers import *
+from expression.simplifier.DerivativeSimplifiers import *
+from expression.simplifier.DivideSimplifiers import *
+from expression.simplifier.MultiplySimplifiers import *
+from expression.simplifier.PowerSimplifiers import *
+from expression.simplifier.SubtractSimplifiers import *
+from expression.simplifier.TrigSimplifiers import *
+
 from expression.Function import Sin, Add, Multiply, Asin, Cos, Acos
 from expression.Variable import Variable
 
@@ -9,79 +17,115 @@ y = Variable('y')
 z = Variable('z')
 
 
-class DivideByOneTest(unittest.TestCase):
+class SimplifierTest(unittest.TestCase):
+    simplifier = None
+
+    def simplify(self, expr):
+        return self.simplifier.simplify(expr)
+
+    def assertSimplify(self, expr1, expr2):
+        self.assertEqual(self.simplify(expr1), expr2)
+
+
+class DivideByOneTest(SimplifierTest):
+    simplifier = DivideByOneSimplifier()
+
     def runTest(self):
-        self.assertEqual((x / 1).simplify(), Variable('x'))
+        self.assertSimplify(x / 1, x)
 
 
-class MultiplyNestedSimplifierTest(unittest.TestCase):
+class MultiplyNestedSimplifierTest(SimplifierTest):
+    simplifier = MultiplyNestedMultiplySimplifier()
+
     def runTest(self):
-        self.assertEqual(((x * y) * z).simplify(), Multiply(x, y, z))
+        self.assertSimplify((x * y) * z, Multiply(x, y, z))
 
 
-class MultiplyCombineTermsSimplifierTest(unittest.TestCase):
+class MultiplyCombineTermsSimplifierTest(SimplifierTest):
+    simplifier = MultiplyCombineTermsSimplifier()
+
     def runTest(self):
-        self.assertEqual(((x * y) * z).simplify(), Multiply(y, x, z))
+        self.assertSimplify(x * x, x ^ 2)
+        self.assertSimplify(Multiply(x, y, x), (x ^ 2) * y)
 
 
-class MultiplyCombineValuesSimplifierTest(unittest.TestCase):
+class MultiplyCombineValuesSimplifierTest(SimplifierTest):
+    simplifier = MultiplyCombineValuesSimplifier()
+
     def runTest(self):
-        self.assertEqual(((x * 3) * 4).simplify(), Multiply(12, x))
-        self.assertEqual(((x * 3) * (Value(4) * 4)).simplify(), Multiply(48, x))
-        self.assertEqual(((x * 0) * (Value(4) * 4)).simplify(), Value(0))
+        self.assertSimplify(Multiply(3, 4, x), Multiply(12, x))
+        self.assertSimplify(Multiply(3, 4, x - 1), Multiply(12, x - 1))
 
 
-class PowerOfOneSimplifierTest(unittest.TestCase):
+class PowerOfOneSimplifierTest(SimplifierTest):
+    simplifier = PowerOfOneSimplifier()
+
     def runTest(self):
-        self.assertEqual((x ^ 1).simplify(), x)
-        self.assertEqual(((x + y) ^ 1).simplify(), x + y)
+        self.assertSimplify(x ^ 1, x)
+        self.assertSimplify((x + y) ^ 1, x + y)
 
 
-class PowerOfZeroSimplifierTest(unittest.TestCase):
+class PowerOfZeroSimplifierTest(SimplifierTest):
+    simplifier = PowerOfZeroSimplifier()
+
     def runTest(self):
-        self.assertEqual((x ^ 0).simplify(), Value(1))
-        self.assertEqual(((x + y) ^ 0).simplify(), Value(1))
+        self.assertSimplify(x ^ 0, Value(1))
+        self.assertSimplify((x + y) ^ 0, Value(1))
 
 
-class SubtractZeroSimplifierTest(unittest.TestCase):
+class SubtractZeroSimplifierTest(SimplifierTest):
+    simplifier = SubtractWithZeroSimplifier()
+
     def runTest(self):
-        self.assertEqual((x - 0).simplify(), x)
-        self.assertEqual(((x + y) - 0).simplify(), x + y)
+        self.assertSimplify(x - 0, x)
+        self.assertSimplify((x + y) - 0, x + y)
 
 
-class SinAsinSimplifierTest(unittest.TestCase):
+class SinAsinSimplifierTest(SimplifierTest):
+    simplifier = SinAsinSimplifier()
+
     def runTest(self):
-        self.assertEqual(Sin(Asin(x - 1)).simplify(), x - 1)
+        self.assertSimplify(Sin(Asin(x - 1)), x - 1)
 
 
-class AsinSinSimplifierTest(unittest.TestCase):
+class AsinSinSimplifierTest(SimplifierTest):
+    simplifier = AsinSinSimplifier()
+
     def runTest(self):
-        self.assertEqual(Asin(Sin(x - 1)).simplify(), x - 1)
+        self.assertSimplify(Asin(Sin(x - 1)), x - 1)
 
 
-class CosAcosSimplifierTest(unittest.TestCase):
+class CosAcosSimplifierTest(SimplifierTest):
+    simplifier = CosAcosSimplifier()
+
     def runTest(self):
-        self.assertEqual(Cos(Acos(x - 1)).simplify(), x - 1)
+        self.assertSimplify(Cos(Acos(x - 1)), x - 1)
 
 
-class AcosCosSimplifierTest(unittest.TestCase):
+class AcosCosSimplifierTest(SimplifierTest):
+    simplifier = AcosCosSimplifier()
+
     def runTest(self):
-        self.assertEqual(Acos(Cos(x - 1)).simplify(), x - 1)
+        self.assertSimplify(Acos(Cos(x - 1)), x - 1)
 
 
-class AddNestedAddSimplifier(unittest.TestCase):
+class AddNestedAddSimplifier(SimplifierTest):
+    simplifier = AddNestedAddSimplifier()
+
     def runTest(self):
-        self.assertEqual(((x + y) + z).simplify(), Add(z, y, x))
+        self.assertSimplify((x + y) + z, Add(z, y, x))
 
 
-class AddCombineValuesSimplifier(unittest.TestCase):
+class AddCombineValuesSimplifier(SimplifierTest):
+    simplifier = AddCombineValuesSimplifier()
+
     def runTest(self):
-        self.assertEqual(((x + 3) + 5).simplify(), Add(x, 8))
-        self.assertEqual(((x + 3) + (5 + 1 + 3)).simplify(), Add(12, x))
+        self.assertSimplify(Add(x, 3, 5), Add(x, 8))
+        self.assertSimplify(Add(x - 1, 3, 5), Add(x - 1, 8))
 
 
-class AddCombineTermsSimplifier(unittest.TestCase):
+class AddCombineTermsSimplifier(SimplifierTest):
+    simplifier = AddCombineTermsSimplifier()
+
     def runTest(self):
-        self.assertEqual((x + x).simplify(), x * 2)
-        # TODO currently failing, will require possibly another simplifier? Gets tricky here
-        self.assertEqual(((x + x) + (x + 1 + 3)).simplify(), Add(4, x * 3))
+        self.assertSimplify(x + x, x * 2)

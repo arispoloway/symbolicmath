@@ -29,7 +29,7 @@ class MultiplyCombineTermsSimplifier(Simplifier):
     def can_simplify(self, expression):
         # TODO maybe rethink this can_simplify, seems to be kinda annoying to do here, somewhat duplicated
         # might just be better to do this check in simplify, and do nothing if not applicable
-        return isinstance(expression, Add)
+        return isinstance(expression, Multiply)
 
     def _simplify(self, expression):
         exprs = expression.get_expressions()
@@ -67,3 +67,32 @@ class MultiplyCombineValuesSimplifier(Simplifier):
                 return -other[0]
             return -Multiply(*other)
         return Multiply(value, *other)
+
+
+class MultiplyDistributionSimplifier(Simplifier):
+    def can_simplify(self, expression):
+        return isinstance(expression, Multiply) and any(isinstance(expr, Add) for expr in expression.get_expressions())
+
+    def _simplify(self, expression):
+        exprs = expression.get_expressions()
+
+        add_term = None
+        others = []
+
+        for expr in exprs:
+            if isinstance(expr, Add) and not add_term:
+                add_term = expr
+            else:
+                others.append(expr)
+
+        add_exprs = add_term.get_expressions()
+
+        first_other = others[0]
+        others = others[1:]
+
+        if not others:
+            return Add(*map(lambda x: first_other * x, add_exprs))
+        return Multiply(*others, Add(*map(lambda x: first_other * x, add_exprs)))
+
+
+

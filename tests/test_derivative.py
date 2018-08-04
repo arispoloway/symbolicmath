@@ -8,6 +8,7 @@ from expression.Utils import reduce_x
 from expression.Derivative import Derivative
 
 
+# TODO rework all simplifier tests like those in test_simplifier, total simplifications to test_simplify
 class DeriveSinTestCase(unittest.TestCase):
     def runTest(self):
         expr = Derivative(Sin('x') - 1, 'x').simplify()
