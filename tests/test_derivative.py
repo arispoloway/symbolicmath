@@ -1,19 +1,13 @@
-import unittest
-
-from expression.Function import *
 from expression.Variable import Variable
-from expression.Value import Value
 from expression.simplifier.DerivativeSimplifiers import *
 
 
-from expression.Derivative import Derivative
 from tests.utils import SimplifierTest
 
 
 x, y, z = Variable('x'), Variable('y'), Variable('z')
 
 
-# TODO rework all simplifier tests like those in test_simplifier, total simplifications to test_simplify
 class DeriveSinTestCase(SimplifierTest):
     simplifier = DerivativeSinSimplifier()
 

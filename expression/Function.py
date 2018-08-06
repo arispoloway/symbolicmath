@@ -39,9 +39,6 @@ class Function(SimplifiableExpression, ABC):
         if not isinstance(other, type(self)):
             return False
         if self._commute:
-            print(set(self.get_expressions()))
-            print(set(other.get_expressions()))
-
             return set(self.get_expressions()) == set(other.get_expressions())
         return self.get_expressions() == other.get_expressions()
 
