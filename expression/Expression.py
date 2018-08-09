@@ -66,13 +66,7 @@ class Expression(ABC):
 
     def __xor__(self, other):
         import expression.Function
-        try:
-            return expression.Function.Power(self, other)
-        except ValueError:
-            try:
-                return expression.Function.Exponent(self, other)
-            except ValueError:
-                raise ValueError()
+        return expression.Function.Exponent(self, other)
 
 
 

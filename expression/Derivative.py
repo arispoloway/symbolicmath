@@ -36,7 +36,6 @@ class Derivative(SimplifiableExpression):
             DerivativeMultiplySimplifier,
             DerivativeExponentSimplifier,
             DerivativeLogSimplifier,
-            DerivativePowerSimplifier,
             DerivativeDivideSimplifier,
         )
 
@@ -51,7 +50,6 @@ class Derivative(SimplifiableExpression):
             DerivativeMultiplySimplifier(),
             DerivativeExponentSimplifier(),
             DerivativeLogSimplifier(),
-            DerivativePowerSimplifier(),
             DerivativeDivideSimplifier(),
         ]
 

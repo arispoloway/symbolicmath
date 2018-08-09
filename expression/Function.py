@@ -192,34 +192,15 @@ class Multiply(Function):
         return '(' + '*'.join(x.__repr__() for x in self.get_expressions()) + ')'
 
 
-class Power(Function):
+class Exponent(Function):
     def __init__(self, base, exponent):
         super().__init__(lambda x, y: pow(x, y), base, exponent)
-        _, exp = self.get_expressions()
-        if not isinstance(exp, Value):
-            raise ValueError('Invalid exponent')
 
     def get_simplifiers(self):
         from expression.simplifier.Simplifier import ValueOnlySimplifier
         from expression.simplifier.PowerSimplifiers import PowerOfZeroSimplifier
         from expression.simplifier.PowerSimplifiers import PowerOfOneSimplifier
         return [ValueOnlySimplifier(), PowerOfOneSimplifier(), PowerOfZeroSimplifier()]
-
-    def __repr__(self):
-        exprs = self.get_expressions()
-        return '({})^({})'.format(exprs[0], exprs[1])
-
-
-class Exponent(Function):
-    def __init__(self, base, exponent):
-        super().__init__(lambda x, y: pow(x, y), base, exponent)
-        b, _ = self.get_expressions()
-        if not isinstance(b, Value):
-            raise ValueError('Invalid base')
-
-    def get_simplifiers(self):
-        from expression.simplifier.Simplifier import ValueOnlySimplifier
-        return [ValueOnlySimplifier()]
 
     def __repr__(self):
         exprs = self.get_expressions()

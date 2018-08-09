@@ -59,7 +59,7 @@ class DeriveMultiplyTestCase(SimplifierTest):
 
 
 class DerivePowerTestCase(SimplifierTest):
-    simplifier = DerivativePowerSimplifier()
+    simplifier = DerivativeExponentSimplifier()
 
     def runTest(self):
         self.assertSimplify((x ^ 2) // x, Value(2) * (x ^ 1) * (x // x))

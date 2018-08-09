@@ -1,5 +1,5 @@
 from expression.Derivative import Derivative
-from expression.Function import Sin, Cos, Negate, Add, Subtract, Multiply, Exponent, Log, Power, Divide
+from expression.Function import Sin, Cos, Negate, Add, Subtract, Multiply, Exponent, Log, Exponent, Divide
 from expression.Value import Value
 from expression.simplifier.Simplifier import Simplifier
 from abc import ABC, abstractmethod
@@ -104,8 +104,11 @@ class DerivativeExponentSimplifier(DerivativeSimplifier):
         expr = expression.get_expression()
         var = expression.get_var()
         base, exp = expr.get_expressions()
-        return (expr * Log(base)) * (exp // var)
-
+        if isinstance(base, Value):
+            return (expr * Log(base)) * (exp // var)
+        elif isinstance(exp, Value):
+            return exp * (base ^ (exp - 1).simplify()) * (base // var)
+        return expression
 
 class DerivativeLogSimplifier(DerivativeSimplifier):
     def can_simplify(self, expression):
@@ -116,17 +119,6 @@ class DerivativeLogSimplifier(DerivativeSimplifier):
         var = expression.get_var()
         exprs = expr.get_expressions()
         return Divide(Value(1), Log(exprs[1]) * exprs[0]) * (exprs[0] // var)
-
-
-class DerivativePowerSimplifier(DerivativeSimplifier):
-    def can_simplify(self, expression):
-        return DerivativeSimplifier.valid_if_type(expression, Power)
-
-    def _simplify(self, expression):
-        expr = expression.get_expression()
-        var = expression.get_var()
-        base, exp = expr.get_expressions()
-        return exp * (base ^ (exp - 1).simplify()) * (base // var)
 
 
 class DerivativeDivideSimplifier(DerivativeSimplifier):
