@@ -92,8 +92,13 @@ class DerivativeMultiplySimplifier(DerivativeSimplifier):
         expr = expression.get_expression()
         var = expression.get_var()
         exprs = expr.get_expressions()
-        first_two = exprs[1] * Derivative(exprs[0], var) + exprs[0] * Derivative(exprs[1], var)
-        return first_two
+        first = exprs[0]
+        rest = exprs[1:]
+        if len(rest) > 1:
+            rest = Multiply(*rest)
+        else:
+            rest = rest[0]
+        return rest * Derivative(first, var) + first * Derivative(rest, var)
 
 
 class DerivativeExponentSimplifier(DerivativeSimplifier):

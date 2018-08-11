@@ -19,6 +19,7 @@ class Function(SimplifiableExpression, ABC):
         self._expressions = tuple(map(possibly_parse_literal, expressions))
         self._commute = commute
 
+    # TODO: fix bc this encourages bad things, should have individual methods on subclasses
     def get_expressions(self):
         return self._expressions
 
