@@ -27,8 +27,6 @@ class MultiplyNestedMultiplySimplifier(Simplifier):
 
 class MultiplyCombineTermsSimplifier(Simplifier):
     def can_simplify(self, expression):
-        # TODO maybe rethink this can_simplify, seems to be kinda annoying to do here, somewhat duplicated
-        # might just be better to do this check in simplify, and do nothing if not applicable
         return isinstance(expression, Multiply)
 
     def _simplify(self, expression):

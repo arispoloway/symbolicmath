@@ -83,7 +83,6 @@ class DerivativeSubtractSimplifier(DerivativeSimplifier):
         return Derivative(exprs[0], var) - Derivative(exprs[1], var)
 
 
-# Todo fix this for more than 2 terms
 class DerivativeMultiplySimplifier(DerivativeSimplifier):
     def can_simplify(self, expression):
         return DerivativeSimplifier.valid_if_type(expression, Multiply)
