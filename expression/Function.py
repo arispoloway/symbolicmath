@@ -113,7 +113,7 @@ class Negate(Function):
 
 class Add(Function):
     def __init__(self, *expressions):
-        super().__init__(lambda *l: reduce(lambda x, y: x + y, l), *expressions)
+        super().__init__(lambda *x: sum(x), *expressions)
         if len(expressions) < 2:
             raise ValueError('Not enough expressions')
 
@@ -195,7 +195,7 @@ class Multiply(Function):
 
 class Exponent(Function):
     def __init__(self, base, exponent):
-        super().__init__(lambda x, y: pow(x, y), base, exponent)
+        super().__init__(pow, base, exponent)
 
     def get_simplifiers(self):
         from expression.simplifier.Simplifier import ValueOnlySimplifier
@@ -210,7 +210,7 @@ class Exponent(Function):
 
 class Log(Function):
     def __init__(self, n, base=e):
-        super().__init__(lambda x, y: log(n, base), n, base)
+        super().__init__(log, n, base)
 
     def get_simplifiers(self):
         from expression.simplifier.Simplifier import ValueOnlySimplifier
