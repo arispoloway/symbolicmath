@@ -1,6 +1,4 @@
-import unittest
 from expression.simplifier.AddSimplifiers import *
-from expression.simplifier.DerivativeSimplifiers import *
 from expression.simplifier.DivideSimplifiers import *
 from expression.simplifier.MultiplySimplifiers import *
 from expression.simplifier.PowerSimplifiers import *
@@ -8,15 +6,10 @@ from expression.simplifier.SubtractSimplifiers import *
 from expression.simplifier.TrigSimplifiers import *
 
 from expression.Function import Sin, Add, Multiply, Asin, Cos, Acos
-from expression.Variable import Variable
 
 from expression.Value import Value
 
-from tests.utils import SimplifierTest
-
-x = Variable('x')
-y = Variable('y')
-z = Variable('z')
+from tests.utils import SimplifierTest, x, y, z
 
 
 class DivideByOneTest(SimplifierTest):

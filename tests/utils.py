@@ -1,4 +1,7 @@
 import unittest
+from expression.Variable import Variable
+
+x, y, z = Variable('x'), Variable('y'), Variable('z')
 
 
 class SimplifierTest(unittest.TestCase):

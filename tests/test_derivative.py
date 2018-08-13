@@ -1,11 +1,7 @@
-from expression.Variable import Variable
 from expression.simplifier.DerivativeSimplifiers import *
 
 
-from tests.utils import SimplifierTest
-
-
-x, y, z = Variable('x'), Variable('y'), Variable('z')
+from tests.utils import SimplifierTest, x, y, z
 
 
 class DeriveSinTestCase(SimplifierTest):
