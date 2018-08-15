@@ -30,7 +30,7 @@ class Function(SimplifiableExpression, ABC):
         else:
             return type(self)(*evaluated)
 
-    def simplify_sub_expressions(self):
+    def simplify_sub_expressions(self, whitelist=None):
         return type(self)(*simplify_all(self._expressions))
 
     def get_func(self):

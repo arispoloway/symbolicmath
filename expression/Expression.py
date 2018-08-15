@@ -19,10 +19,10 @@ class Expression(ABC):
     def get_simplifiers(self):
         return []
 
-    def simplify(self):
+    def simplify(self, whitelist=None):
         return self
 
-    def simplify_sub_expressions(self):
+    def simplify_sub_expressions(self, whitelist=None):
         return self
 
     @abstractmethod

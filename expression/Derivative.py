@@ -21,8 +21,8 @@ class Derivative(SimplifiableExpression):
         return Derivative(self._expr.evaluate(**kwargs), self._var)
 
     # TODO rework this into a Function as well?
-    def simplify_sub_expressions(self):
-        return Derivative(self._expr.simplify(), self._var.simplify())
+    def simplify_sub_expressions(self, whitelist=None):
+        return Derivative(self._expr.simplify(whitelist=whitelist), self._var.simplify(whitelist=whitelist))
 
     def get_simplifiers(self):
         from expression.simplifier.DerivativeSimplifiers import (

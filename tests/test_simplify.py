@@ -1,7 +1,6 @@
-import unittest
 from expression.Variable import Variable
-from expression.Value import Value
 from expression.Function import *
+from expression.simplifier.AddSimplifiers import AddCombineTermsSimplifier
 
 from tests.utils import SimplifyTest
 
@@ -34,4 +33,13 @@ class SimplifyTest5(SimplifyTest):
 
     def runTest(self):
         self.assertSimplify((Value(5) * Value(3)) + (Value(2) - Value(1)), Value(16))
+
+
+class SimplifyWhitelistTest(SimplifyTest):
+
+    def runTest(self):
+        self.assertSimplify(x + x, x + x, whitelist=[])
+        # self.assertSimplify(x * (x + x), x * x * 2, whitelist=[AddCombineTermsSimplifier])
+        # TODO this test fails, will need a more thoughtful solution to automatically combining terms
+        # TODO write more tests
 

@@ -16,5 +16,5 @@ class SimplifierTest(unittest.TestCase):
 
 class SimplifyTest(unittest.TestCase):
 
-    def assertSimplify(self, expr1, expr2):
-        self.assertEqual(expr1.simplify(), expr2)
+    def assertSimplify(self, expr1, expr2, whitelist=None):
+        self.assertEqual(expr1.simplify(whitelist=whitelist), expr2)
