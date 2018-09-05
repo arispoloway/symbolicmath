@@ -4,7 +4,15 @@ from parsing.Utils import possibly_parse_literal
 
 
 class Derivative(SimplifiableExpression):
+    """
+    Represents a derivative operation
+    """
     def __init__(self, expr, var):
+        """
+        Args:
+            expr: The expression to take the derivative of
+            var: The variable (or expression) to take with respect to
+        """
         super().__init__()
         self._expr = possibly_parse_literal(expr)
         self._var = possibly_parse_literal(var)
@@ -12,9 +20,19 @@ class Derivative(SimplifiableExpression):
             raise ValueError('Invalid respect to')
 
     def get_expression(self):
+        """
+        Gets the expression
+        Returns:
+            The expression
+        """
         return self._expr
 
     def get_var(self):
+        """
+        Gets the variable (or expression) this derivative is respect to
+        Returns:
+            The variable
+        """
         return self._var
 
     def evaluate(self, **kwargs):

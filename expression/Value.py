@@ -2,7 +2,14 @@ from expression.Expression import Expression
 
 
 class Value(Expression):
+    """
+    An expression representing a literal numeric value
+    """
     def __init__(self, value):
+        """
+        Args:
+            value: The value
+        """
         super().__init__()
         if not isinstance(value, (int, float, complex)):
             raise ValueError('Invalid Value')

@@ -3,6 +3,9 @@ from abc import ABC, abstractmethod
 
 
 class SimplifiableExpression(Expression, ABC):
+    """
+    An abstract class to represent an expression that is simplifiable
+    """
     @abstractmethod
     def __eq__(self, other):
         pass
