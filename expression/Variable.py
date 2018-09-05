@@ -2,7 +2,14 @@ from expression.Expression import Expression
 
 
 class Variable(Expression):
+    """
+    An expression representing an unknown value
+    """
     def __init__(self, name):
+        """
+        Args:
+            name: Name to identify the variable by, ie 'x', 'y'
+        """
         super().__init__()
         self._name = name
 
@@ -13,6 +20,12 @@ class Variable(Expression):
         return self
 
     def get_name(self):
+        """
+        Get the name of this variable
+
+        Returns:
+            The name of this variable
+        """
         return self._name
 
     def __eq__(self, other):
