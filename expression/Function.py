@@ -74,7 +74,9 @@ class Function(SimplifiableExpression, ABC):
     def __hash__(self):
         #TODO fix this hash for commutative stuff
         #Test is broken because of this
-        return hash((type(self), self.get_expressions()))
+        hashes = sorted(hash(expression) for expression in self.get_expressions())
+
+        return hash((type(self), tuple(hashes)))
 
 
 class Sin(Function):
