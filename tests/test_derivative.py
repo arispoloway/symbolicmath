@@ -51,7 +51,8 @@ class DeriveMultiplyTestCase(SimplifierTest):
 
     def runTest(self):
         self.assertSimplify((Sin(x) * x) // x, Sin(x) * (x // x) + x * (Sin(x) // x))
-        self.assertSimplify((Sin(x) * x * Cos(x)) // x, Sin(x) * ((x * Cos(x)) // x) + (x * Cos(x)) * (Sin(x) // x))
+        self.assertSimplify((Sin(x) * x * Cos(x)) // x,
+                            (Sin(x) // x) * x * Cos(x) + Sin(x) * (x // x) * Cos(x) + Sin(x) * x * (Cos(x) // x))
 
 
 class DerivePowerTestCase(SimplifierTest):
