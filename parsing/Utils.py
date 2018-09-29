@@ -58,6 +58,7 @@ def is_function(s):
 def get_function(s):
     return functions.get(s.lower(), (None, None))[0]
 
+
 def get_function_args(s):
     return functions.get(s.lower(), (None, None))[1]
 

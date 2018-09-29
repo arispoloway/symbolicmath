@@ -18,6 +18,9 @@ from expression.Value import Value
 from expression.Variable import Variable
 
 
+# TODO document parsing
+
+
 def shunting_yard(tokens):
     s = Stream(tokens)
     output_queue = Queue()

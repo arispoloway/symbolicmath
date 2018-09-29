@@ -12,6 +12,8 @@ from expression.Value import Value
 from tests.utils import SimplifierTest, x, y, z
 
 
+# TODO test add simplifiers
+
 class DivideByOneTest(SimplifierTest):
     simplifier = DivideByOneSimplifier()
 
