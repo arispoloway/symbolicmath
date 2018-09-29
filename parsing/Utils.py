@@ -23,12 +23,12 @@ functions = {
 }
 
 operators = {
-    '^': (4, 'r', Exponent),
-    '*': (3, 'l', Multiply),
-    '/': (3, 'l', Divide),
+    '^': (5, 'r', Exponent),
+    '*': (4, 'l', Multiply),
+    '/': (4, 'l', Divide),
     '+': (2, 'l', Add),
     '-': (2, 'l', Subtract),
-    '//': (1, 'l', Derivative),
+    '//': (3, 'l', Derivative),
 }
 
 # TODO combine function and operator? seem similar
