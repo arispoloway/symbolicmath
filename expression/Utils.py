@@ -1,3 +1,7 @@
+from expression.Value import Value
+from expression.Variable import Variable
+
+
 def simplify_all(l, whitelist=None):
     """
     Given a list of expressions, simplify each
@@ -28,3 +32,11 @@ def filter_split(func, l):
         else:
             bad.append(x)
     return good, bad
+
+
+def possibly_parse_literal(x):
+    if isinstance(x, (int, float)):
+        return Value(x)
+    if isinstance(x, str):
+        return Variable(x)
+    return x

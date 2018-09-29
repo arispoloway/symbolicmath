@@ -3,11 +3,14 @@ from functools import reduce
 from math import sin, cos, acos, asin, pow, log, e
 from collections import defaultdict
 
+import expression.Utils
 from expression.SimplifiableExpression import SimplifiableExpression
 from expression.Value import Value
 from expression.Utils import simplify_all
-from parsing.Utils import possibly_parse_literal
+import parsing.Utils
 
+
+# Todo refactor operators vs functions
 
 class Function(SimplifiableExpression, ABC):
     """
@@ -26,7 +29,7 @@ class Function(SimplifiableExpression, ABC):
         """
         super().__init__()
         self._func = func
-        self._expressions = tuple(map(possibly_parse_literal, expressions))
+        self._expressions = tuple(map(expression.Utils.possibly_parse_literal, expressions))
         self._commute = commute
 
     def get_expressions(self):

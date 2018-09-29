@@ -1,6 +1,6 @@
 from expression.SimplifiableExpression import SimplifiableExpression
 from expression.Value import Value
-from parsing.Utils import possibly_parse_literal
+from expression.Utils import possibly_parse_literal
 
 
 class Derivative(SimplifiableExpression):
