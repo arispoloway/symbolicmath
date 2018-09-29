@@ -46,6 +46,7 @@ class ShuntingYardTest(unittest.TestCase):
 class ShuntingOrderOperationsTest(ShuntingYardTest):
     def runTest(self):
         self.assertParsed('3 * 4', '3 4 *')
+        self.assertParsed('3 // x + 3', '3 x // 3 +')
         self.assertParsed('3 * 4 + 3', '3 4 * 3 +')
         self.assertParsed('3 * 4 + 3 ^ 2', '3 4 * 3 2 ^ +')
         self.assertParsed('3 * 4 ^ 5 + 3 ^ 2', '3 4 5 ^ * 3 2 ^ +')
