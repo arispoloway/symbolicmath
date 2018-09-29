@@ -11,6 +11,6 @@ while True:
     i = input('Input a comma separated series of assignments, or q to quit (ex. "x=3,y=1")\n')
     if i == 'q':
         break
-    assignments = i.strip(' ').split(',')
+    assignments = i.replace(' ', '').split(',')
     mappings = {x[0]: float(x[1]) for x in map(lambda z: z.split('='), assignments)}
     print(exp.evaluate(**mappings))
