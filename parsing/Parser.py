@@ -18,10 +18,12 @@ from expression.Value import Value
 from expression.Variable import Variable
 
 
-# TODO document parsing
-
-
 def shunting_yard(tokens):
+    """
+    Do the shunting yard algorithm to convert the stream of tokens into a stack
+    :param tokens: The list of tokens
+    :return: A queue of tokens in stack form
+    """
     s = Stream(tokens)
     output_queue = Queue()
     operator_stack = Stack()
@@ -60,6 +62,11 @@ def shunting_yard(tokens):
 
 
 def parse_to_expression(s):
+    """
+    Parse a given string expression into an Expression
+    :param s: The string
+    :return: The resulting Expression
+    """
     tokens = tokenize(s)
     tokens = clean_tokens(tokens)
     queue = shunting_yard(tokens)
@@ -82,7 +89,3 @@ def parse_to_expression(s):
             stack.push(Variable(t))
 
     return stack.pop()
-
-
-
-
