@@ -36,7 +36,11 @@ class Derivative(SimplifiableExpression):
         return self._var
 
     def evaluate(self, **kwargs):
-        return Derivative(self._expr.evaluate(**kwargs), self._var)
+        # TODO maybe rethink evaluation / simplifying here? this seems to work but questionable
+        simplified = self.simplify()
+        if simplified == self:
+            return self
+        return simplified.evaluate(**kwargs)
 
     # TODO rework this into a Function as well?
     def simplify_sub_expressions(self, whitelist=None):
