@@ -7,7 +7,6 @@ import expression.Utils
 from expression.SimplifiableExpression import SimplifiableExpression
 from expression.Value import Value
 from expression.Utils import simplify_all
-import parsing.Utils
 
 
 # Todo refactor operators vs functions
