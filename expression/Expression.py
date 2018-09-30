@@ -75,7 +75,6 @@ class Expression(ABC):
 
     def __add__(self, other):
         import expression.Function
-        # TODO maybe think more about this? Combining here seems logical for ease of use, especially while testing
         from expression.simplifier.AddSimplifiers import AddNestedAddSimplifier
         return AddNestedAddSimplifier().simplify(expression.Function.Add(self, other))
 

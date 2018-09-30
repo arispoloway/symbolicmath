@@ -74,10 +74,7 @@ class Function(SimplifiableExpression, ABC):
         return self.get_expressions() == other.get_expressions()
 
     def __hash__(self):
-        #TODO fix this hash for commutative stuff
-        #Test is broken because of this
         hashes = sorted(hash(expression) for expression in self.get_expressions())
-
         return hash((type(self), tuple(hashes)))
 
 
