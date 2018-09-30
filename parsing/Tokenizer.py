@@ -1,4 +1,4 @@
-from parsing.Utils import is_alpha, Stream
+from parsing.Utils import is_alpha, Stream, is_numeric
 
 
 def tokenize(s):
@@ -35,5 +35,11 @@ def clean_tokens(tokens):
     while idx < (len(tokens) - 1):
         if is_alpha(tokens[idx]) and is_alpha(tokens[idx + 1]):
             tokens.insert(idx + 1, '*')
+
+        # TODO see if this is the best way to do this
+        if (is_alpha(tokens[idx]) and is_numeric(tokens[idx + 1])) or\
+                (is_numeric(tokens[idx]) and is_alpha(tokens[idx + 1])):
+            tokens.insert(idx + 1, '*')
+
         idx += 1
     return tokens
