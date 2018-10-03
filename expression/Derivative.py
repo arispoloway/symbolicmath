@@ -1,6 +1,6 @@
 from expression.SimplifiableExpression import SimplifiableExpression
 from expression.Value import Value
-from expression.Utils import possibly_parse_literal
+from utils.expression_utils import possibly_parse_literal
 
 
 class Derivative(SimplifiableExpression):
@@ -42,9 +42,16 @@ class Derivative(SimplifiableExpression):
             return self
         return simplified.evaluate(**kwargs)
 
-    # TODO rework this into a Function as well?
-    def simplify_sub_expressions(self, whitelist=None):
-        return Derivative(self._expr.simplify(whitelist=whitelist), self._var.simplify(whitelist=whitelist))
+    def get_transformations(self):
+        direct = self.get_direct_transformations()
+        sub_transformations = []
+        expr_transformations = self.get_expression().get_transformations()
+        var_transformations = self.get_var().get_transformations()
+        for transformation in expr_transformations:
+            sub_transformations.append(Derivative(transformation, self.get_var()))
+        for transformation in var_transformations:
+            sub_transformations.append(Derivative(self.get_expression(), transformation))
+        return direct + sub_transformations
 
     def get_simplifiers(self):
         from expression.simplifier.DerivativeSimplifiers import (

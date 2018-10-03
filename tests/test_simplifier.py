@@ -13,6 +13,7 @@ from tests.utils import SimplifierTest, x, y, z
 
 
 # TODO test add simplifiers
+# TODO test errors
 
 class DivideByOneTest(SimplifierTest):
     simplifier = DivideByOneSimplifier()
@@ -26,6 +27,14 @@ class MultiplyNestedSimplifierTest(SimplifierTest):
 
     def runTest(self):
         self.assertSimplify((x * y) * z, Multiply(x, y, z))
+
+
+class MultiplyDistributeSimplifierTest(SimplifierTest):
+    simplifier = MultiplyDistributeSimplifier()
+
+    def runTest(self):
+        self.assertSimplify(x * (x + x), (x * x) + (x * x))
+        self.assertSimplify(Multiply(x, y, (x + 1)), Multiply((x * y), x) + Multiply((x * y), 1))
 
 
 class MultiplyCombineTermsSimplifierTest(SimplifierTest):

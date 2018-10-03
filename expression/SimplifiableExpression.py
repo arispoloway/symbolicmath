@@ -22,22 +22,10 @@ class SimplifiableExpression(Expression, ABC):
     def __repr__(self):
         pass
 
-    def simplify(self, whitelist=None):
-        current_expression = self
-        past_expressions = set()
-        change_this_iteration = True
+    @abstractmethod
+    def get_simplifiers(self):
+        pass
 
-        while change_this_iteration:
-            change_this_iteration = False
-            current_expression = current_expression.simplify_sub_expressions(whitelist=whitelist)
-            simplifiers = filter(lambda s: s in whitelist if whitelist is not None else True,
-                                 current_expression.get_simplifiers())
-
-            past_expressions.add(current_expression)
-            for s in simplifiers:
-                current_expression = s.simplify(current_expression)
-                if current_expression not in past_expressions:
-                    past_expressions.add(current_expression)
-                    change_this_iteration = True
-
-        return current_expression
+    def get_direct_transformations(self):
+        simplifiers = self.get_simplifiers()
+        return list(filter(lambda x: x != self, (s.simplify(self) for s in simplifiers)))

@@ -98,7 +98,6 @@ class DerivativeMultiplySimplifier(DerivativeSimplifier):
         return Add(*terms)
 
 
-
 class DerivativeExponentSimplifier(DerivativeSimplifier):
     def can_simplify(self, expression):
         return DerivativeSimplifier.valid_if_type(expression, Exponent)
@@ -110,8 +109,9 @@ class DerivativeExponentSimplifier(DerivativeSimplifier):
         if isinstance(base, Value):
             return (expr * Log(base)) * (exp // var)
         elif isinstance(exp, Value):
-            return exp * (base ^ (exp - 1).simplify()) * (base // var)
+            return exp * (base ^ (exp - 1)) * (base // var)
         return expression
+
 
 class DerivativeLogSimplifier(DerivativeSimplifier):
     def can_simplify(self, expression):

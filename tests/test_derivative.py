@@ -59,7 +59,7 @@ class DerivePowerTestCase(SimplifierTest):
     simplifier = DerivativeExponentSimplifier()
 
     def runTest(self):
-        self.assertSimplify((x ^ 2) // x, Value(2) * (x ^ 1) * (x // x))
+        self.assertSimplify((x ^ 2) // x, Value(2) * (x ^ (Value(2) - 1)) * (x // x))
 
 
 class DeriveExponentTestCase(SimplifierTest):
@@ -67,3 +67,18 @@ class DeriveExponentTestCase(SimplifierTest):
 
     def runTest(self):
         self.assertSimplify((Value(2) ^ x) // x, Multiply(Value(2) ^ x, x // x, Log(2)))
+
+
+class DerivativeConstantTestCase(SimplifierTest):
+    simplifier = DerivativeConstantSimplifier()
+
+    def runTest(self):
+        self.assertSimplify(Value(2) // x, Value(0))
+        self.assertSimplify(Value(2) // (x * 2), Value(0))
+
+
+class DerivativeVariableTestCase(SimplifierTest):
+    simplifier = DerivativeVariableSimplifier()
+
+    def runTest(self):
+        self.assertSimplify(x // x, Value(1))

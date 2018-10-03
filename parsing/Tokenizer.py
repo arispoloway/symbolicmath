@@ -1,4 +1,5 @@
-from parsing.Utils import is_alpha, Stream, is_numeric
+from utils.parsing_utils import is_alpha, is_numeric
+from utils.data_structure_utils import Stream
 
 
 def tokenize(s):

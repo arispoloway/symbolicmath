@@ -3,9 +3,9 @@ from functools import reduce
 from itertools import chain
 
 from expression.Function import Multiply, Add
-from expression.Utils import filter_split
 from expression.Value import Value
 from expression.simplifier.Simplifier import Simplifier
+from utils.expression_utils import filter_split
 
 
 class MultiplyNestedMultiplySimplifier(Simplifier):
@@ -20,10 +20,22 @@ class MultiplyNestedMultiplySimplifier(Simplifier):
         return Multiply(*mult, *other)
 
 
-# TODO consider handling future case, where simplification may involve expanding powers,
-# instead of combining into a power
-# Will probably involve allowing specification of simplifiers, may be apt to rename transform with a heuristic to use
-# ones that generally simplify
+class MultiplyDistributeSimplifier(Simplifier):
+    def can_simplify(self, expression):
+        return isinstance(expression, Multiply) and any(isinstance(x, Add) for x in expression.get_expressions())
+
+    def _simplify(self, expression):
+        exprs = list(expression.get_expressions())
+        add = next(e for e in exprs if isinstance(e, Add))
+        exprs.remove(add)
+        terms = []
+        for term in add.get_expressions():
+            if len(exprs) == 1:
+                terms.append(Multiply(exprs[0], term))
+            else:
+                terms.append(Multiply(Multiply(*exprs), term))
+        return Add(*terms)
+
 
 class MultiplyCombineTermsSimplifier(Simplifier):
     def can_simplify(self, expression):
@@ -64,33 +76,7 @@ class MultiplyCombineValuesSimplifier(Simplifier):
             if len(other) == 1:
                 return -other[0]
             return -Multiply(*other)
+        if len(other) == 0:
+            return Value(value)
         return Multiply(value, *other)
-
-
-class MultiplyDistributionSimplifier(Simplifier):
-    def can_simplify(self, expression):
-        return isinstance(expression, Multiply) and any(isinstance(expr, Add) for expr in expression.get_expressions())
-
-    def _simplify(self, expression):
-        exprs = expression.get_expressions()
-
-        add_term = None
-        others = []
-
-        for expr in exprs:
-            if isinstance(expr, Add) and not add_term:
-                add_term = expr
-            else:
-                others.append(expr)
-
-        add_exprs = add_term.get_expressions()
-
-        first_other = others[0]
-        others = others[1:]
-
-        if not others:
-            return Add(*map(lambda x: first_other * x, add_exprs))
-        return Multiply(*others, Add(*map(lambda x: first_other * x, add_exprs)))
-
-
 

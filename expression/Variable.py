@@ -15,7 +15,7 @@ class Variable(Expression):
 
     def evaluate(self, **kwargs):
         if self._name in kwargs:
-            from expression.Utils import possibly_parse_literal
+            from utils.expression_utils import possibly_parse_literal
             return possibly_parse_literal(kwargs.get(self._name))
         return self
 

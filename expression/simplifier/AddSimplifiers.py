@@ -3,9 +3,9 @@ from functools import reduce
 from itertools import chain
 
 from expression.Function import Add
-from expression.Utils import filter_split
 from expression.Value import Value
 from expression.simplifier.Simplifier import Simplifier
+from utils.expression_utils import filter_split
 
 
 class AddNestedAddSimplifier(Simplifier):
@@ -29,6 +29,8 @@ class AddCombineValuesSimplifier(Simplifier):
         values, other = filter_split(lambda x: isinstance(x, Value), expression.get_expressions())
         value = reduce(lambda x, y: x + y, map(lambda x: x.get_numeric_value(), values))
 
+        if len(other) == 0:
+            return Value(value)
         if value == 0:
             if len(other) == 1:
                 return other[0]

@@ -1,8 +1,7 @@
+from expression.Value import Value
+from expression.Variable import Variable
 from parsing.Tokenizer import tokenize, clean_tokens
-from parsing.Utils import (
-    Stream,
-    Queue,
-    Stack,
+from utils.parsing_utils import (
     is_alpha,
     parse_number,
     is_numeric,
@@ -14,8 +13,7 @@ from parsing.Utils import (
     get_function,
     get_function_args,
 )
-from expression.Value import Value
-from expression.Variable import Variable
+from utils.data_structure_utils import Stream, Queue, Stack
 
 
 def shunting_yard(tokens):

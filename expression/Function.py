@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from functools import reduce
 from math import sin, cos, acos, asin, pow, log, e
-from collections import defaultdict
 
-import expression.Utils
+import utils.expression_utils
 from expression.SimplifiableExpression import SimplifiableExpression
 from expression.Value import Value
-from expression.Utils import simplify_all
 
 
 # Todo refactor operators vs functions
@@ -28,7 +27,7 @@ class Function(SimplifiableExpression, ABC):
         """
         super().__init__()
         self._func = func
-        self._expressions = tuple(map(expression.Utils.possibly_parse_literal, expressions))
+        self._expressions = tuple(map(utils.expression_utils.possibly_parse_literal, expressions))
         self._commute = commute
 
     def get_expressions(self):
@@ -48,8 +47,15 @@ class Function(SimplifiableExpression, ABC):
         else:
             return type(self)(*evaluated)
 
-    def simplify_sub_expressions(self, whitelist=None):
-        return type(self)(*simplify_all(self._expressions))
+    def get_transformations(self):
+        direct = self.get_direct_transformations()
+        sub_transformations = []
+        for i, expr in enumerate(self.get_expressions()):
+            for sub_transformation in expr.get_transformations():
+                new_args = list(self.get_expressions())
+                new_args[i] = sub_transformation
+                sub_transformations.append(type(self)(*new_args))
+        return direct + sub_transformations
 
     def get_func(self):
         """
@@ -257,11 +263,13 @@ class Multiply(Function):
             MultiplyCombineValuesSimplifier,
             MultiplyCombineTermsSimplifier,
             MultiplyNestedMultiplySimplifier,
+            MultiplyDistributeSimplifier
         )
         return [FunctionValueOnlySimplifier(),
                 MultiplyNestedMultiplySimplifier(),
                 MultiplyCombineValuesSimplifier(),
-                MultiplyCombineTermsSimplifier(), ]
+                MultiplyCombineTermsSimplifier(),
+                MultiplyDistributeSimplifier()]
 
     def __repr__(self):
         return '(' + '*'.join(x.__repr__() for x in self.get_expressions()) + ')'

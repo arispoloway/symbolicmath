@@ -33,33 +33,13 @@ class Expression(ABC):
         """
         return None
 
-    def get_simplifiers(self):
+    def get_transformations(self):
         """
-        Gets a list of simplifiers known to potentially be able to act on this Expression
+        Gets a list of equivalent transformations of this expression
         Returns:
             The list
         """
         return []
-
-    def simplify(self, whitelist=None):
-        """
-        Simplify this expression
-        Args:
-            whitelist: A whitelist of simplifiers to use
-        Returns:
-            A new expression that is the simplified form of this expression
-        """
-        return self
-
-    def simplify_sub_expressions(self, whitelist=None):
-        """
-        Creates a new expression that is this expressions, with all sub expressions simplified
-        Args:
-            whitelist: A whitelist of simplifiers to use
-        Returns:
-            A new expression that is this expression with sub expressions simplified
-        """
-        return self
 
     @abstractmethod
     def __eq__(self, other):
