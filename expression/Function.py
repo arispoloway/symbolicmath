@@ -188,11 +188,13 @@ class Add(Function):
             AddCombineTermsSimplifier,
             AddCombineValuesSimplifier,
             AddNestedAddSimplifier,
+            AddFactorSimplifier,
         )
         return [FunctionValueOnlySimplifier(),
                 AddNestedAddSimplifier(),
                 AddCombineValuesSimplifier(),
-                AddCombineTermsSimplifier(), ]
+                AddCombineTermsSimplifier(),
+                AddFactorSimplifier()]
 
     def __repr__(self):
         return '(' + \

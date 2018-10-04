@@ -1,29 +1,45 @@
+from utils.data_structure_utils import Queue, Stack
 from expression.Function import Sin, Asin, Cos
 from expression.Variable import Variable
+from expression.Value import Value
 from collections import defaultdict
-import heapq
 
 
 def simplify(expr):
     previous = {}
 
-    heap = []
-    heapq.heappush(heap, (len(str(expr)), str(expr), expr))
+    queue = Queue()
+    queue.push(expr)
 
-    while len(heap) != 0:
-        l, s, expr = heapq.heappop(heap)
+    while not queue.is_empty():
+        expr = queue.pop()
 
-        for new_expr in expr.get_transformations():
+        transformations = expr.get_transformations()
+        print(expr)
+        print(len(transformations))
+        if len(transformations) == 0:
+            return expr
+        for new_expr in transformations:
             if new_expr not in previous:
                 previous[new_expr] = expr
-                heapq.heappush(heap, (len(str(new_expr)), str(new_expr), new_expr))
+                queue.push(new_expr)
 
     return previous
+
+def simplify2(expr):
+    blacklist = set()
+    while True:
+        ts = expr.get_transformations()
+        n = next((e for e in ts if e not in blacklist), expr)
+        if n == expr:
+            return expr
+        expr = n
+        blacklist.add(expr)
+        print(expr)
 
 
 if __name__ == '__main__':
     x = Variable('x')
-    expr = (Sin(x * 2) * (x + 1)) // x
-    simp = simplify(expr)
-    lens = [(e, len(str(e))) for e in simp.keys()]
-    items = list(sorted(lens, key=lambda x: x[1]))
+    expr = ((Value(2) * (x^2) + (Value(3) * Sin(x))) // x) * (x + 1)
+    simp = simplify2(expr)
+    print(simp)

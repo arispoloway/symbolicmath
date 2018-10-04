@@ -12,7 +12,6 @@ from expression.Value import Value
 from tests.utils import SimplifierTest, x, y, z
 
 
-# TODO test add simplifiers
 # TODO test errors
 
 class DivideByOneTest(SimplifierTest):
@@ -34,6 +33,7 @@ class MultiplyDistributeSimplifierTest(SimplifierTest):
 
     def runTest(self):
         self.assertSimplify(x * (x + x), (x * x) + (x * x))
+        self.assertSimplify(x * (x + x + x), (x * x) + (x * x) + (x * x))
         self.assertSimplify(Multiply(x, y, (x + 1)), Multiply((x * y), x) + Multiply((x * y), 1))
 
 
@@ -105,14 +105,14 @@ class AcosCosSimplifierTest(SimplifierTest):
         self.assertSimplify(Acos(Cos(x - 1)), x - 1)
 
 
-class AddNestedAddSimplifier(SimplifierTest):
+class AddNestedAddSimplifierTest(SimplifierTest):
     simplifier = AddNestedAddSimplifier()
 
     def runTest(self):
         self.assertSimplify((x + y) + z, Add(z, y, x))
 
 
-class AddCombineValuesSimplifier(SimplifierTest):
+class AddCombineValuesSimplifierTest(SimplifierTest):
     simplifier = AddCombineValuesSimplifier()
 
     def runTest(self):
@@ -120,8 +120,21 @@ class AddCombineValuesSimplifier(SimplifierTest):
         self.assertSimplify(Add(x - 1, 3, 5), Add(x - 1, 8))
 
 
-class AddCombineTermsSimplifier(SimplifierTest):
+class AddCombineTermsSimplifierTest(SimplifierTest):
     simplifier = AddCombineTermsSimplifier()
 
     def runTest(self):
         self.assertSimplify(x + x, x * 2)
+        self.assertSimplify(x + x + x, x * 3)
+        self.assertSimplify(x + 4 + x + x, x * 3 + 4)
+
+
+class AddFactorSimplifierTest(SimplifierTest):
+    simplifier = AddFactorSimplifier()
+
+    def runTest(self):
+        self.assertSimplify((x * 2) + (x * x), x * (x + 2))
+        self.assertSimplify((Cos(x) * 2) + (Cos(x) * x), Cos(x) * (x + 2))
+        self.assertSimplify((x * 2) + (x * x) + (x * y), x * (x + 2 + y))
+        self.assertSimplify((x * 2) + (y * 3), (x * 2) + (y * 3))
+
